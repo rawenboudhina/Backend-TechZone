@@ -33,7 +33,6 @@ app.use('/api/auth', require('./routes/auth.routes'));
 app.use('/api/products', require('./routes/product.routes'));
 app.use('/api/cart', require('./routes/cart.routes'));
 app.use('/api/wishlist', require('./routes/wishlist.routes'));
-// app.use('/api/orders', require('./routes/order.routes'));
 
 // Route d'accueil (utile pour vérifier que le serveur tourne)
 app.get('/', (req, res) => {
