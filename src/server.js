@@ -21,10 +21,7 @@ app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // Connexion MongoDB avec options modernes et retry
-mongoose.connect(process.env.MONGODB_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-})
+mongoose.connect(process.env.MONGODB_URI)
   .then(() => console.log('MongoDB connecté avec succès'))
   .catch(err => {
     console.error('Erreur connexion MongoDB:', err.message);
@@ -34,9 +31,8 @@ mongoose.connect(process.env.MONGODB_URI, {
 // Routes
 app.use('/api/auth', require('./routes/auth.routes'));
 app.use('/api/products', require('./routes/product.routes'));
-// Tu peux ajouter les autres routes ici plus tard :
-// app.use('/api/cart', require('./routes/cart.routes'));
-// app.use('/api/wishlist', require('./routes/wishlist.routes'));
+app.use('/api/cart', require('./routes/cart.routes'));
+app.use('/api/wishlist', require('./routes/wishlist.routes'));
 // app.use('/api/orders', require('./routes/order.routes'));
 
 // Route d'accueil (utile pour vérifier que le serveur tourne)

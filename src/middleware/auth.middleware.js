@@ -2,7 +2,7 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 
-const JWT_SECRET = process.env.JWT_SECRET || 'ton-secret-tres-securise-ici';
+const JWT_SECRET = process.env.JWT_SECRET || 'ton-secret-ultra-securise-2025';
 
 exports.protect = async (req, res, next) => {
   let token;
@@ -12,15 +12,17 @@ exports.protect = async (req, res, next) => {
   }
 
   if (!token) {
-    return res.status(401).json({ message: 'Vous n’êtes pas authentifié' });
+    return res.status(401).json({ message: 'Accès refusé. Token manquant.' });
   }
 
   try {
     const decoded = jwt.verify(token, JWT_SECRET);
     const user = await User.findById(decoded.id);
+    
     if (!user) {
-      return res.status(401).json({ message: 'Token invalide' });
+      return res.status(401).json({ message: 'Utilisateur non trouvé' });
     }
+
     req.user = user;
     next();
   } catch (err) {
