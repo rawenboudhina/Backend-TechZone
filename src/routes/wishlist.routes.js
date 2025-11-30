@@ -1,3 +1,4 @@
+// backend/routes/wishlist.routes.js
 const express = require('express');
 const { protect } = require('../middleware/auth.middleware');
 const {
@@ -8,10 +9,12 @@ const {
 
 const router = express.Router();
 
+// Toutes les routes wishlist sont protégées
 router.use(protect);
 
-router.get('/:userId', getWishlist);
-router.post('/:userId/add', addToWishlist);
-router.post('/:userId/remove', removeFromWishlist);
+// CES ROUTES SONT CELLES QUE TON FRONTEND UTILISE
+router.get('/', getWishlist);           // GET  /api/wishlist
+router.post('/add', addToWishlist);     // POST /api/wishlist/add
+router.post('/remove', removeFromWishlist); // POST /api/wishlist/remove
 
 module.exports = router;

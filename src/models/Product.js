@@ -1,8 +1,7 @@
 const mongoose = require('mongoose');
 
 const productSchema = new mongoose.Schema({
-  id: { type: Number, required: true, unique: true },
-  title: String,
+id: { type: Number, required: true, unique: true }, // ← CE CHAMP DOIT EXISTER  title: String,
   price: Number,
   description: String,
   category: String,
