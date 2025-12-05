@@ -9,6 +9,7 @@ const userSchema = new mongoose.Schema({
   firstName: { type: String, required: true, trim: true },
   lastName: { type: String, required: true, trim: true },
   address: { type: String, required: true, trim: true },
+  addresses: { type: [String], default: [] }
 }, { timestamps: true });
 
 // VERSION 2025 → PAS DE next()

@@ -71,6 +71,7 @@ exports.login = async (req, res) => {
         firstName: user.firstName,
         lastName: user.lastName,
         address: user.address,
+        addresses: user.addresses || []
       }
     });
   } catch (err) {
@@ -93,6 +94,44 @@ exports.getMe = async (req, res) => {
         firstName: user.firstName,
         lastName: user.lastName,
         address: user.address,
+        addresses: user.addresses || []
+      }
+    });
+  } catch (err) {
+    res.status(500).json({ message: 'Erreur serveur' });
+  }
+};
+
+exports.updateMe = async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id);
+    if (!user) return res.status(404).json({ message: 'Utilisateur non trouvé' });
+
+    const { firstName, lastName, email, address, addresses } = req.body;
+
+    if (typeof firstName === 'string') user.firstName = firstName;
+    if (typeof lastName === 'string') user.lastName = lastName;
+    if (typeof email === 'string') user.email = email;
+    if (typeof address === 'string') user.address = address;
+    if (Array.isArray(addresses)) {
+      const clean = addresses
+        .map(a => (typeof a === 'string' ? a.trim() : ''))
+        .filter(a => !!a && a !== user.address);
+      user.addresses = clean;
+    }
+
+    await user.save();
+
+    res.json({
+      success: true,
+      user: {
+        id: user._id,
+        email: user.email,
+        username: user.username,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        address: user.address,
+        addresses: user.addresses || []
       }
     });
   } catch (err) {

@@ -3,6 +3,7 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
+const { apiReference } = require('@scalar/express-api-reference');
 
 const app = express();
 
@@ -33,7 +34,7 @@ app.use('/api/auth', require('./routes/auth.routes'));
 app.use('/api/products', require('./routes/product.routes'));
 app.use('/api/cart', require('./routes/cart.routes'));
 app.use('/api/wishlist', require('./routes/wishlist.routes'));
-
+app.use('/api/orders', require('./routes/order.routes'));
 // Route d'accueil (utile pour vérifier que le serveur tourne)
 app.get('/', (req, res) => {
   res.send(`
@@ -65,5 +66,17 @@ app.listen(PORT, () => {
   console.log(`Serveur lancé sur http://localhost:${PORT}`);
   console.log(`API disponible sur http://localhost:${PORT}/api`);
 });
+// Sert le fichier OpenAPI (le cerveau de la doc)
+app.get('/api.json', (req, res) => {
+  res.sendFile('api.json', { root: __dirname });
+});
+
+// Affiche la documentation interactive (c’est ÇA qui remplace Swagger UI)
+app.use('/docs', apiReference({
+  pageTitle: 'TechZone API - Documentation Interactive',
+  spec: {
+    url: '/api.json'
+  }
+}));
 
 module.exports = app; // Utile pour les tests avec Supertest plus tard
