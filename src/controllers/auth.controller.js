@@ -9,7 +9,7 @@ const signToken = (id) => jwt.sign({ id }, JWT_SECRET, { expiresIn: JWT_EXPIRES_
 
 exports.register = async (req, res) => {
   try {
-    const { firstName, lastName, email, password, address } = req.body;
+    const { firstName, lastName, email, password, address, addresses } = req.body;
 
     if (!email || !password || !firstName || !lastName || !address) {
       return res.status(400).json({ message: 'Tous les champs sont obligatoires' });
@@ -23,7 +23,7 @@ exports.register = async (req, res) => {
     const username = email.split('@')[0] + Math.floor(Math.random() * 9999);
 
     const user = await User.create({
-      firstName, lastName, email, password, address, username
+      firstName, lastName, email, password, address, addresses: Array.isArray(addresses) ? addresses : [], username
     });
 
     const token = signToken(user._id);
@@ -38,6 +38,7 @@ exports.register = async (req, res) => {
         firstName: user.firstName,
         lastName: user.lastName,
         address: user.address,
+        addresses: user.addresses,
       }
     });
   } catch (err) {
@@ -71,7 +72,7 @@ exports.login = async (req, res) => {
         firstName: user.firstName,
         lastName: user.lastName,
         address: user.address,
-        addresses: user.addresses || []
+        addresses: user.addresses,
       }
     });
   } catch (err) {
@@ -94,7 +95,7 @@ exports.getMe = async (req, res) => {
         firstName: user.firstName,
         lastName: user.lastName,
         address: user.address,
-        addresses: user.addresses || []
+        addresses: user.addresses,
       }
     });
   } catch (err) {
@@ -104,21 +105,14 @@ exports.getMe = async (req, res) => {
 
 exports.updateMe = async (req, res) => {
   try {
+    const { firstName, lastName, address, addresses } = req.body;
     const user = await User.findById(req.user._id);
     if (!user) return res.status(404).json({ message: 'Utilisateur non trouvé' });
 
-    const { firstName, lastName, email, address, addresses } = req.body;
-
     if (typeof firstName === 'string') user.firstName = firstName;
     if (typeof lastName === 'string') user.lastName = lastName;
-    if (typeof email === 'string') user.email = email;
     if (typeof address === 'string') user.address = address;
-    if (Array.isArray(addresses)) {
-      const clean = addresses
-        .map(a => (typeof a === 'string' ? a.trim() : ''))
-        .filter(a => !!a && a !== user.address);
-      user.addresses = clean;
-    }
+    if (Array.isArray(addresses)) user.addresses = addresses.filter(a => typeof a === 'string' && a.trim());
 
     await user.save();
 
@@ -131,7 +125,7 @@ exports.updateMe = async (req, res) => {
         firstName: user.firstName,
         lastName: user.lastName,
         address: user.address,
-        addresses: user.addresses || []
+        addresses: user.addresses,
       }
     });
   } catch (err) {
